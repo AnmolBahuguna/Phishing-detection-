@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phishing Detector</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 700px;
+            width: 100%;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .shield-icon {
+            font-size: 60px;
+            margin-bottom: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .input-group {
+            position: relative;
+            margin: 30px 0;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            min-width: 250px;
+            padding: 16px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #fff;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        button {
+            padding: 16px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 15px;
+            display: none;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .safe {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border-left: 5px solid #28a745;
+        }
+
+        .warning {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border-left: 5px solid #ffc107;
+        }
+
+        .danger {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            border-left: 5px solid #dc3545;
+        }
+
+        .result h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 20px;
+            word-break: break-all;
+        }
+
+        .result p {
+            margin: 10px 0;
+            color: #555;
+            font-size: 16px;
+        }
+
+        .result strong {
+            font-weight: 600;
+        }
+
+        .result h4 {
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 18px;
+        }
+
+        .result ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .result li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            color: #555;
+        }
+
+        .result li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .risk-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .risk-low {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .risk-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .risk-high {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .shield-icon {
+                font-size: 50px;
+            }
+
+            .input-wrapper {
+                flex-direction: column;
+            }
+
+            input[type="text"] {
+                width: 100%;
+                min-width: 100%;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .result h3 {
+                font-size: 18px;
+            }
+        }
+
+        .info-box {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-box p {
+            color: #555;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="shield-icon">🛡️</div>
+            <h1>Phishing Website Detector</h1>
+            <p class="subtitle">Protect yourself from malicious websites</p>
+        </div>
+
+        <div class="input-group">
+            <div class="input-wrapper">
+                <input type="text" id="urlInput" placeholder="Enter URL to check (e.g., https://example.com)">
+                <button onclick="scanUrl()">🔍 Scan URL</button>
+            </div>
+        </div>
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 10px; color: #666;">Analyzing URL...</p>
+        </div>
+
+        <div id="result" class="result"></div>
+
+        <div class="info-box">
+            <p><strong>💡 Tip:</strong> Always check URLs before clicking links in emails or messages.</p>
+            <p><strong>🔒 Stay Safe:</strong> Look for HTTPS and verify the domain spelling.</p>
+        </div>
+    </div>
+
+    <script>
+        async function scanUrl() {
+            const url = document.getElementById('urlInput').value.trim();
+            const resultDiv = document.getElementById('result');
+            const loadingDiv = document.getElementById('loading');
+            
+            if (!url) {
+                showResult('<h3>⚠️ No URL Entered</h3><p>Please enter a URL to scan.</p>', 'warning');
+                return;
+            }
+
+            try {
+                loadingDiv.style.display = 'block';
+                resultDiv.style.display = 'none';
+                
+                const response = await fetch('/scan', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url: url })
+                });
+
+                const data = await response.json();
+                
+                if (data.error) {
+                    showResult(`<h3>❌ Error</h3><p>${data.error}</p>`, 'danger');
+                    return;
+                }
+
+                let riskClass = data.risk_score <= 3 ? 'risk-low' : (data.risk_score <= 6 ? 'risk-medium' : 'risk-high');
+                let statusIcon = data.is_phishing ? '⚠️' : '✅';
+                let statusText = data.is_phishing ? 'Likely Phishing - Be Careful!' : 'Appears Safe';
+
+                let resultHtml = `
+                    <h3>${statusIcon} Scan Results</h3>
+                    <p><strong>URL:</strong> ${data.url}</p>
+                    <p><strong>Risk Score:</strong> <span class="risk-badge ${riskClass}">${data.risk_score}/10</span></p>
+                    <p><strong>Status:</strong> <strong>${statusText}</strong></p>
+                    <h4>📋 Analysis Details:</h4>
+                    <ul>
+                `;
+
+                data.checks.url_pattern.reasons.forEach(reason => {
+                    resultHtml += `<li>${reason}</li>`;
+                });
+
+                resultHtml += `</ul>`;
+
+                if (data.is_phishing) {
+                    resultHtml += `<p style="margin-top: 20px; font-weight: 600; color: #dc3545;">⚠️ Warning: Do not enter personal information on this site!</p>`;
+                }
+
+                const resultClass = data.is_phishing ? 'danger' : 'safe';
+                showResult(resultHtml, resultClass);
+
+            } catch (error) {
+                showResult(`<h3>❌ Scanning Error</h3><p>Unable to scan URL. Please check your connection and try again.</p><p style="font-size: 12px; color: #888; margin-top: 10px;">${error.message}</p>`, 'danger');
+            } finally {
+                loadingDiv.style.display = 'none';
+            }
+        }
+
+        function showResult(message, type) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = message;
+            resultDiv.className = `result ${type}`;
+            resultDiv.style.display = 'block';
+        }
+
+        document.getElementById('urlInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                scanUrl();
+            }
+        });
+    </script>
+</body>
+</html>
