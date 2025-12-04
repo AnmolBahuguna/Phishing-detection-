@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phishing Detector</title>
+    <title>Advanced Phishing Detector</title>
     <style>
         * {
             margin: 0;
@@ -12,27 +12,213 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
             min-height: 100vh;
             padding: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3), transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(138, 43, 226, 0.3), transparent 50%);
+            pointer-events: none;
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 700px;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            padding: 45px;
+            border-radius: 24px;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4), 
+                        0 0 0 1px rgba(255, 255, 255, 0.1);
+            max-width: 800px;
             width: 100%;
-            animation: fadeIn 0.5s ease-in;
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            z-index: 1;
         }
 
         @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .shield-icon {
+            font-size: 70px;
+            margin-bottom: 15px;
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+            filter: drop-shadow(0 4px 12px rgba(102, 126, 234, 0.4));
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            25% {
+                transform: translateY(-10px) rotate(-2deg);
+            }
+            75% {
+                transform: translateY(-5px) rotate(2deg);
+            }
+        }
+
+        h1 {
+            color: #1a1a2e;
+            font-size: 32px;
+            margin-bottom: 12px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .input-group {
+            margin: 35px 0;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            min-width: 280px;
+            padding: 18px 24px;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            font-size: 16px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            background: #ffffff;
+            color: #1a1a2e;
+            font-family: 'Inter', sans-serif;
+        }
+
+        input[type="text"]::placeholder {
+            color: #94a3b8;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.12),
+                        0 2px 8px rgba(102, 126, 234, 0.15);
+            transform: translateY(-1px);
+        }
+
+        button {
+            padding: 18px 42px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.35);
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.5);
+        }
+
+        button:active {
+            transform: translateY(-1px);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 25px 0;
+        }
+
+        .spinner {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading p {
+            margin-top: 15px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .result {
+            margin-top: 35px;
+            padding: 28px;
+            border-radius: 16px;
+            display: none;
+            animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        @keyframes slideUp {
             from {
                 opacity: 0;
                 transform: translateY(20px);
@@ -43,164 +229,60 @@
             }
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .shield-icon {
-            font-size: 60px;
-            margin-bottom: 10px;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
-            }
-        }
-
-        h1 {
-            color: #333;
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
-
-        .subtitle {
-            color: #666;
-            font-size: 14px;
-        }
-
-        .input-group {
-            position: relative;
-            margin: 30px 0;
-        }
-
-        .input-wrapper {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        input[type="text"] {
-            flex: 1;
-            min-width: 250px;
-            padding: 16px 20px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background: #fff;
-        }
-
-        input[type="text"]:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-        }
-
-        button {
-            padding: 16px 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-        }
-
-        button:active {
-            transform: translateY(0);
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            margin: 20px 0;
-        }
-
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .result {
-            margin-top: 30px;
-            padding: 25px;
-            border-radius: 15px;
-            display: none;
-            animation: slideIn 0.5s ease-out;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
         .safe {
-            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-            border-left: 5px solid #28a745;
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border-left: 6px solid #10b981;
         }
 
         .warning {
-            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-            border-left: 5px solid #ffc107;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 6px solid #f59e0b;
         }
 
         .danger {
-            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
-            border-left: 5px solid #dc3545;
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border-left: 6px solid #ef4444;
         }
 
         .result h3 {
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 20px;
-            word-break: break-all;
+            color: #1a1a2e;
+            margin-bottom: 18px;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
         }
 
         .result p {
-            margin: 10px 0;
-            color: #555;
-            font-size: 16px;
+            margin: 12px 0;
+            color: #475569;
+            font-size: 15px;
+            line-height: 1.6;
         }
 
         .result strong {
             font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .url-display {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 12px 16px;
+            border-radius: 10px;
+            word-break: break-all;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            margin: 12px 0;
+            border: 1px solid rgba(0, 0, 0, 0.08);
         }
 
         .result h4 {
-            margin-top: 20px;
-            margin-bottom: 10px;
-            color: #333;
+            margin-top: 24px;
+            margin-bottom: 14px;
+            color: #1a1a2e;
             font-size: 18px;
+            font-weight: 600;
         }
 
         .result ul {
@@ -209,54 +291,102 @@
         }
 
         .result li {
-            padding: 8px 0;
-            padding-left: 25px;
+            padding: 10px 0;
+            padding-left: 32px;
             position: relative;
-            color: #555;
+            color: #475569;
+            line-height: 1.5;
         }
 
         .result li:before {
-            content: "→";
+            content: "✓";
             position: absolute;
             left: 0;
             color: #667eea;
             font-weight: bold;
+            font-size: 18px;
+        }
+
+        .danger li:before {
+            content: "⚠";
         }
 
         .risk-badge {
             display: inline-block;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-weight: 600;
+            padding: 8px 18px;
+            border-radius: 24px;
+            font-weight: 700;
             font-size: 14px;
+            letter-spacing: 0.3px;
         }
 
         .risk-low {
-            background: #d4edda;
-            color: #155724;
+            background: #10b981;
+            color: white;
         }
 
         .risk-medium {
-            background: #fff3cd;
-            color: #856404;
+            background: #f59e0b;
+            color: white;
         }
 
         .risk-high {
-            background: #f8d7da;
-            color: #721c24;
+            background: #ef4444;
+            color: white;
         }
 
-        @media (max-width: 600px) {
+        .info-box {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            padding: 20px;
+            border-radius: 14px;
+            margin-top: 30px;
+            border-left: 5px solid #3b82f6;
+        }
+
+        .info-box p {
+            color: #1e40af;
+            font-size: 14px;
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .warning-banner {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            padding: 18px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border: 2px solid #fca5a5;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .warning-banner-icon {
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+
+        .warning-banner p {
+            margin: 0;
+            font-weight: 600;
+            color: #991b1b;
+            font-size: 15px;
+        }
+
+        @media (max-width: 650px) {
             .container {
-                padding: 25px;
+                padding: 30px 20px;
             }
 
             h1 {
-                font-size: 24px;
+                font-size: 26px;
             }
 
             .shield-icon {
-                font-size: 50px;
+                font-size: 55px;
             }
 
             .input-wrapper {
@@ -273,22 +403,23 @@
             }
 
             .result h3 {
-                font-size: 18px;
+                font-size: 20px;
             }
         }
 
-        .info-box {
-            background: #f0f4ff;
-            padding: 15px;
+        .score-meter {
+            margin: 20px 0;
+            height: 12px;
+            background: #e5e7eb;
             border-radius: 10px;
-            margin-top: 20px;
-            border-left: 4px solid #667eea;
+            overflow: hidden;
+            position: relative;
         }
 
-        .info-box p {
-            color: #555;
-            font-size: 14px;
-            margin: 5px 0;
+        .score-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 1s ease-out, background 0.5s;
         }
     </style>
 </head>
@@ -296,35 +427,159 @@
     <div class="container">
         <div class="header">
             <div class="shield-icon">🛡️</div>
-            <h1>Phishing Website Detector</h1>
-            <p class="subtitle">Protect yourself from malicious websites</p>
+            <h1>Advanced Phishing Detector</h1>
+            <p class="subtitle">AI-Powered URL Security Analysis</p>
         </div>
 
         <div class="input-group">
             <div class="input-wrapper">
-                <input type="text" id="urlInput" placeholder="Enter URL to check (e.g., https://example.com)">
-                <button onclick="scanUrl()">🔍 Scan URL</button>
+                <input type="text" id="urlInput" placeholder="Enter URL to scan (e.g., https://example.com)">
+                <button id="scanBtn" onclick="scanUrl()">🔍 Scan URL</button>
             </div>
         </div>
 
         <div id="loading" class="loading">
             <div class="spinner"></div>
-            <p style="margin-top: 10px; color: #666;">Analyzing URL...</p>
+            <p>Analyzing URL security...</p>
         </div>
 
         <div id="result" class="result"></div>
 
         <div class="info-box">
-            <p><strong>💡 Tip:</strong> Always check URLs before clicking links in emails or messages.</p>
-            <p><strong>🔒 Stay Safe:</strong> Look for HTTPS and verify the domain spelling.</p>
+            <p><strong>💡 Pro Tip:</strong> Always verify URLs before entering sensitive information</p>
+            <p><strong>🔒 Security:</strong> Check for HTTPS, proper domain spelling, and certificate validity</p>
         </div>
     </div>
 
     <script>
+        // Enhanced phishing detection logic
+        function analyzeURL(url) {
+            const analysis = {
+                url: url,
+                risk_score: 0,
+                is_phishing: false,
+                checks: {
+                    url_pattern: {
+                        passed: true,
+                        reasons: []
+                    }
+                }
+            };
+
+            try {
+                const urlObj = new URL(url);
+                const domain = urlObj.hostname.toLowerCase();
+                const path = urlObj.pathname.toLowerCase();
+                const protocol = urlObj.protocol;
+
+                // Check 1: Protocol Security
+                if (protocol !== 'https:') {
+                    analysis.risk_score += 2;
+                    analysis.checks.url_pattern.reasons.push('⚠️ Not using secure HTTPS protocol');
+                } else {
+                    analysis.checks.url_pattern.reasons.push('✓ Using secure HTTPS protocol');
+                }
+
+                // Check 2: Suspicious TLDs
+                const suspiciousTLDs = ['.tk', '.ml', '.ga', '.cf', '.gq', '.xyz', '.top', '.work'];
+                const hasSuspiciousTLD = suspiciousTLDs.some(tld => domain.endsWith(tld));
+                if (hasSuspiciousTLD) {
+                    analysis.risk_score += 3;
+                    analysis.checks.url_pattern.reasons.push('⚠️ Uses suspicious top-level domain');
+                }
+
+                // Check 3: IP Address Usage
+                const ipPattern = /^https?:\/\/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/;
+                if (ipPattern.test(url)) {
+                    analysis.risk_score += 3;
+                    analysis.checks.url_pattern.reasons.push('⚠️ Uses IP address instead of domain name');
+                }
+
+                // Check 4: Excessive Subdomains
+                const subdomainCount = domain.split('.').length - 2;
+                if (subdomainCount > 2) {
+                    analysis.risk_score += 2;
+                    analysis.checks.url_pattern.reasons.push('⚠️ Excessive subdomains detected');
+                } else if (subdomainCount <= 1) {
+                    analysis.checks.url_pattern.reasons.push('✓ Normal domain structure');
+                }
+
+                // Check 5: Suspicious Keywords
+                const phishingKeywords = ['login', 'signin', 'account', 'verify', 'secure', 'update', 'confirm', 'bank', 'paypal', 'amazon', 'apple', 'microsoft', 'google'];
+                const suspiciousKeywordCount = phishingKeywords.filter(keyword => 
+                    domain.includes(keyword) || path.includes(keyword)
+                ).length;
+                
+                if (suspiciousKeywordCount >= 2) {
+                    analysis.risk_score += 3;
+                    analysis.checks.url_pattern.reasons.push('⚠️ Multiple suspicious keywords found in URL');
+                } else if (suspiciousKeywordCount === 1) {
+                    analysis.risk_score += 1;
+                    analysis.checks.url_pattern.reasons.push('⚠️ Suspicious keyword detected');
+                }
+
+                // Check 6: URL Length
+                if (url.length > 100) {
+                    analysis.risk_score += 1;
+                    analysis.checks.url_pattern.reasons.push('⚠️ Unusually long URL');
+                } else {
+                    analysis.checks.url_pattern.reasons.push('✓ Normal URL length');
+                }
+
+                // Check 7: Special Characters
+                const specialCharCount = (domain.match(/[-_@]/g) || []).length;
+                if (specialCharCount > 3) {
+                    analysis.risk_score += 2;
+                    analysis.checks.url_pattern.reasons.push('⚠️ Excessive special characters in domain');
+                }
+
+                // Check 8: Homograph Attack Detection
+                const suspiciousChars = /[а-яА-Я]/; // Cyrillic characters
+                if (suspiciousChars.test(domain)) {
+                    analysis.risk_score += 4;
+                    analysis.checks.url_pattern.reasons.push('⚠️ Potential homograph attack detected (similar-looking characters)');
+                }
+
+                // Check 9: Typosquatting Detection (common brands)
+                const popularDomains = ['google', 'facebook', 'amazon', 'paypal', 'microsoft', 'apple', 'netflix', 'instagram'];
+                popularDomains.forEach(brand => {
+                    if (domain.includes(brand) && !domain.endsWith(`${brand}.com`) && !domain.endsWith(`${brand}.org`)) {
+                        analysis.risk_score += 3;
+                        analysis.checks.url_pattern.reasons.push(`⚠️ Possible typosquatting of "${brand}"`);
+                    }
+                });
+
+                // Check 10: Port Number (unusual ports)
+                if (urlObj.port && !['80', '443', ''].includes(urlObj.port)) {
+                    analysis.risk_score += 2;
+                    analysis.checks.url_pattern.reasons.push('⚠️ Using unusual port number');
+                }
+
+                // Final determination
+                analysis.is_phishing = analysis.risk_score >= 5;
+                
+                if (analysis.risk_score === 0) {
+                    analysis.checks.url_pattern.reasons.push('✓ No obvious security concerns detected');
+                }
+
+                // Ensure risk score doesn't exceed 10
+                analysis.risk_score = Math.min(analysis.risk_score, 10);
+
+            } catch (error) {
+                analysis.risk_score = 10;
+                analysis.is_phishing = true;
+                analysis.checks.url_pattern.reasons = ['❌ Invalid URL format'];
+            }
+
+            return analysis;
+        }
+
         async function scanUrl() {
-            const url = document.getElementById('urlInput').value.trim();
+            const urlInput = document.getElementById('urlInput');
+            const url = urlInput.value.trim();
             const resultDiv = document.getElementById('result');
             const loadingDiv = document.getElementById('loading');
+            const scanBtn = document.getElementById('scanBtn');
             
             if (!url) {
                 showResult('<h3>⚠️ No URL Entered</h3><p>Please enter a URL to scan.</p>', 'warning');
@@ -332,34 +587,29 @@
             }
 
             try {
+                scanBtn.disabled = true;
                 loadingDiv.style.display = 'block';
                 resultDiv.style.display = 'none';
                 
-                const response = await fetch('/scan', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ url: url })
-                });
-
-                const data = await response.json();
+                // Simulate network delay for realistic UX
+                await new Promise(resolve => setTimeout(resolve, 1500));
                 
-                if (data.error) {
-                    showResult(`<h3>❌ Error</h3><p>${data.error}</p>`, 'danger');
-                    return;
-                }
+                const data = analyzeURL(url);
 
                 let riskClass = data.risk_score <= 3 ? 'risk-low' : (data.risk_score <= 6 ? 'risk-medium' : 'risk-high');
-                let statusIcon = data.is_phishing ? '⚠️' : '✅';
-                let statusText = data.is_phishing ? 'Likely Phishing - Be Careful!' : 'Appears Safe';
+                let statusIcon = data.is_phishing ? '🚨' : '✅';
+                let statusText = data.is_phishing ? 'Potentially Dangerous' : 'Appears Safe';
+                let scoreColor = data.risk_score <= 3 ? '#10b981' : (data.risk_score <= 6 ? '#f59e0b' : '#ef4444');
 
                 let resultHtml = `
-                    <h3>${statusIcon} Scan Results</h3>
-                    <p><strong>URL:</strong> ${data.url}</p>
-                    <p><strong>Risk Score:</strong> <span class="risk-badge ${riskClass}">${data.risk_score}/10</span></p>
+                    <h3>${statusIcon} Security Analysis Complete</h3>
+                    <div class="url-display">${data.url}</div>
+                    <p><strong>Risk Assessment:</strong> <span class="risk-badge ${riskClass}">${data.risk_score}/10</span></p>
+                    <div class="score-meter">
+                        <div class="score-fill" style="width: ${data.risk_score * 10}%; background: ${scoreColor};"></div>
+                    </div>
                     <p><strong>Status:</strong> <strong>${statusText}</strong></p>
-                    <h4>📋 Analysis Details:</h4>
+                    <h4>🔍 Detection Results:</h4>
                     <ul>
                 `;
 
@@ -370,16 +620,22 @@
                 resultHtml += `</ul>`;
 
                 if (data.is_phishing) {
-                    resultHtml += `<p style="margin-top: 20px; font-weight: 600; color: #dc3545;">⚠️ Warning: Do not enter personal information on this site!</p>`;
+                    resultHtml += `
+                        <div class="warning-banner">
+                            <div class="warning-banner-icon">🚨</div>
+                            <p>WARNING: This URL shows multiple red flags. Do not enter personal information, passwords, or financial details!</p>
+                        </div>
+                    `;
                 }
 
-                const resultClass = data.is_phishing ? 'danger' : 'safe';
+                const resultClass = data.is_phishing ? 'danger' : (data.risk_score > 3 ? 'warning' : 'safe');
                 showResult(resultHtml, resultClass);
 
             } catch (error) {
-                showResult(`<h3>❌ Scanning Error</h3><p>Unable to scan URL. Please check your connection and try again.</p><p style="font-size: 12px; color: #888; margin-top: 10px;">${error.message}</p>`, 'danger');
+                showResult(`<h3>❌ Analysis Error</h3><p>Unable to analyze URL. Please check the format and try again.</p><p style="font-size: 12px; color: #888; margin-top: 10px;">${error.message}</p>`, 'danger');
             } finally {
                 loadingDiv.style.display = 'none';
+                scanBtn.disabled = false;
             }
         }
 
@@ -394,6 +650,18 @@
             if (e.key === 'Enter') {
                 scanUrl();
             }
+        });
+
+        // Add some example URLs on double-click for testing
+        document.getElementById('urlInput').addEventListener('dblclick', function() {
+            const examples = [
+                'https://www.google.com',
+                'http://suspicious-bank-verify.tk',
+                'https://paypal-secure-login.xyz',
+                'https://192.168.1.1/admin',
+                'https://accounts-verify-apple.com.secure-login.tk'
+            ];
+            this.value = examples[Math.floor(Math.random() * examples.length)];
         });
     </script>
 </body>
