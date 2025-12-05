@@ -31,28 +31,7 @@ A production-ready Flask application for detecting phishing websites with advanc
 - Python 3.11+
 - pip
 
-### Installation
 
-```bash
-# Clone the repository
-git clone <your-repo-url>
-cd phishing-detector
-
-# Create virtual environment
-python -m venv venv
-
-# Activate virtual environment
-# On Windows:
-venv\Scripts\activate
-# On Mac/Linux:
-source venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run the application
-python app.py
-```
 
 Visit `http://localhost:5000` in your browser.
 
